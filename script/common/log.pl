@@ -52,3 +52,5 @@ sub warning_log {
 	my ( $message ) = @_;
 	print &_now_date()."-WARNING-\t$message\n";
 }
+
+1;
