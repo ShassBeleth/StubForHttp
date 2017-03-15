@@ -20,6 +20,10 @@ use utf8;
 my $conf_file = "../configuration.ini";
 my $config = Config::Tiny->new->read( $conf_file );
 
-print $config->{AccessPoint}->{Port}."\n";
+#接続情報
+my $http_daemon = HTTP::Daemon->new( LocalAddr => '0.0.0.0' , LocalPort => $config->{AccessPoint}->{Port} ) || die;
+my $url = $http_daemon->url;
+
+print $url."\n";
 
 &debug_log( "やったぜ" );
