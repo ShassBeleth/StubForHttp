@@ -1,8 +1,10 @@
 #!env perl
 
+#警告関係のモジュール読み込み
 use strict;
 use warnings;
 
+#文字コード関係のモジュール読み込み
 use utf8;
 my $enc_os = 'cp932';
 binmode STDIN, ":encoding( $enc_os )";
