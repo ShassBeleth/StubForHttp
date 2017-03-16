@@ -20,10 +20,12 @@ use utf8;
 #設定ファイル読み込み
 my $conf_file = "../configuration.ini";
 my $config = Config::Tiny->new->read( $conf_file );
-
 &debug_log( "設定ファイル情報" );
 &debug_log( "[AccessPoint]" );
 &debug_log( "Port:".$config->{AccessPoint}->{Port} );
+&debug_log( "[Response]" );
+&debug_log( "ContentType:".$config->{Response}->{ContentType} );
+&debug_log( "Status:".$config->{Response}->{Status} );
 
 #接続情報取得
 my $http_daemon = HTTP::Daemon->new( LocalAddr => '0.0.0.0' , LocalPort => $config->{AccessPoint}->{Port} ) || die;
@@ -35,7 +37,8 @@ while( my ( $client_connection , $peer_addr ) = $http_daemon->accept ){
 	
 	#要求を受け付けた時
 	while( my $request = $client_connection->get_request ){
-	
+		&debug_log( "要求を受け付けました" );
+		
 		#要求を出したクライアントのIPアドレスを取得
 		my ( $port , $ip ) = sockaddr_in( $peer_addr );
 		$ip = join( "." , unpack( "C4" , $ip ) );
@@ -51,8 +54,8 @@ while( my ( $client_connection , $peer_addr ) = $http_daemon->accept ){
 			
 			#レスポンスを返す
 			&info_log( "レスポンス通知" );
-			my $response_header = HTTP::Headers->new( "Content-Type" => "application/json; charset=utf-8" );
-			my $response = HTTP::Response->new( 200 , "OK" , $response_header , '{ "result":"0" }' );
+			my $response_header = HTTP::Headers->new( "Content-Type" => $config->{Response}->{ContentType} );
+			my $response = HTTP::Response->new( $config->{Response}->{Status} , "" , $response_header , '{ "result":"0" }' );
 			$client_connection->send_response( $response );
 			&success_log( "レスポンス通知成功" );
 			
