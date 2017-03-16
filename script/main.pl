@@ -23,6 +23,9 @@ my $config = Config::Tiny->new->read( $conf_file );
 &debug_log( "設定ファイル情報" );
 &debug_log( "[AccessPoint]" );
 &debug_log( "Port:".$config->{AccessPoint}->{Port} );
+&debug_log( "[Request]" );
+&debug_log( "Path:".$config->{Request}->{Path} );
+&debug_log( "Method:".$config->{Request}->{Method} );
 &debug_log( "[Response]" );
 &debug_log( "ContentType:".$config->{Response}->{ContentType} );
 &debug_log( "Status:".$config->{Response}->{Status} );
@@ -47,10 +50,19 @@ while( my ( $client_connection , $peer_addr ) = $http_daemon->accept ){
 		my $path = $request->url->path;
 		&debug_log( "パス:".$path );
 		
-		if( $path =~ /\/aaa\/bbb/ ){
-			
+		#指定パスだった場合
+		if( $path eq $config->{Request}->{Path} ){
 			&info_log( $ip."からの要求を受け取りました" );
 			
+			#メソッド判定
+			&debug_log( "指定メソッド:".$config->{Request}->{Method} );
+			&debug_log( "受け付けたリクエストのメソッド：".$request->method );
+			if( $request->method eq $config->{Request}->{Method} ){
+				&success_log( "指定メソッドを受け取りました" );
+			}
+			else {
+				&failed_log( "指定されたメソッドと異なります" );
+			}
 			
 			#レスポンスを返す
 			&info_log( "レスポンス通知" );
